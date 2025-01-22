@@ -1,0 +1,14 @@
+train: C:\Users\11951\Desktop\NUS\ME5001\code\yolov8\ultralytics\dataset\dataset_yolo_all\images\train  # Path to training images
+val: C:\Users\11951\Desktop\NUS\ME5001\code\yolov8\ultralytics\dataset\dataset_yolo_all\images\val
+test: C:\Users\11951\Desktop\NUS\ME5001\code\yolov8\ultralytics\dataset\dataset_yolo_all\images\test   # Path to test images
+
+# 类别
+nc: 6
+names: [
+'stage_1',
+'stage_2',
+'stage_3',
+'stage_4',
+'stage_5',
+'stage_6',
+]
