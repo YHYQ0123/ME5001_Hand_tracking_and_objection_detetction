@@ -1,4 +1,7 @@
 import cv2
+import numpy as np
+from pykinect2 import PyKinectRuntime
+from pykinect2.PyKinectV2 import *
 
 # 全局变量，用于存储点击的坐标点
 clicked_points = []
@@ -16,27 +19,27 @@ def mouse_callback(event, x, y, flags, param):
             cv2.destroyAllWindows()
 
 def main():
-    # 打开摄像头
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Error: Unable to access the camera.")
-        return
+    # 初始化 PyKinectRuntime，仅获取 RGB 摄像头数据
+    kinect = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Color)
 
     # 创建一个窗口并绑定鼠标回调函数
-    cv2.namedWindow("Camera")
-    cv2.setMouseCallback("Camera", mouse_callback)
+    cv2.namedWindow("Kinect RGB Camera")
+    cv2.setMouseCallback("Kinect RGB Camera", mouse_callback)
 
     print("Click 4 points in the video feed. The program will exit after 4 clicks.")
 
     try:
         while True:
-            ret, frame = cap.read()
-            if not ret:
-                print("Failed to grab frame. Exiting...")
-                break
+            # 检查是否有新的 RGB 帧
+            if kinect.has_new_color_frame():
+                # 获取 RGB 帧数据并转换为 numpy 数组
+                frame = kinect.get_last_color_frame()
+                frame = frame.reshape((1080, 1920, 4))  # Kinect V2 RGB 分辨率为 1920x1080，4 通道
+                frame = frame[:, :, :3]  # 去掉 Alpha 通道
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # 转换颜色通道顺序
 
-            # 显示当前帧
-            cv2.imshow("Camera", frame)
+                # 显示当前帧
+                cv2.imshow("Kinect RGB Camera", frame)
 
             # 按 'q' 键手动退出
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -46,9 +49,9 @@ def main():
     except KeyboardInterrupt:
         print("Stream stopped manually.")
     finally:
-        cap.release()
+        kinect.close()
         cv2.destroyAllWindows()
-        print("Video stream stopped.")
+        print("Kinect stream stopped.")
         print("Clicked points:", clicked_points)
 
 if __name__ == "__main__":
