@@ -1,0 +1,12 @@
+train: C:\Users\xxdbd\Desktop\YeQing\ultralytics\ultralytics\dataset\yolo_dataset_new\train\images  # Path to training images
+val: C:\Users\xxdbd\Desktop\YeQing\ultralytics\ultralytics\dataset\yolo_dataset_new\val\images
+test: C:\Users\xxdbd\Desktop\YeQing\ultralytics\ultralytics\dataset\yolo_dataset_new\test\images   # Path to test images
+
+# 类别
+nc: 4
+names: [
+'stage_1',
+'stage_2',
+'stage_3',
+'stage_4',
+]
