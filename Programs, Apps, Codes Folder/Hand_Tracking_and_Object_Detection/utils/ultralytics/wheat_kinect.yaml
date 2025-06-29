@@ -1,8 +1,0 @@
-train: C:\Users\xxdbd\Desktop\YeQing\Hand_Tracking_and_Object_Detection\Hand_Tracking_and_Object_Detection\utils\ultralytics\screw_driver_datasets\kinect_color_dataset\train\images
-val: C:\Users\xxdbd\Desktop\YeQing\Hand_Tracking_and_Object_Detection\Hand_Tracking_and_Object_Detection\utils\ultralytics\screw_driver_datasets\kinect_color_dataset\val\images
-test: C:\Users\xxdbd\Desktop\YeQing\Hand_Tracking_and_Object_Detection\Hand_Tracking_and_Object_Detection\utils\ultralytics\screw_driver_datasets\kinect_color_dataset\test
-# 类别
-nc: 1
-names: [
-'screwdriver',
-]
