@@ -23,13 +23,6 @@ This project implements a real-time vision-based system to verify human assembly
 ## 🖼️ System Architecture
 ![alt text](image.png)
 
-**Main Modules**:
-
-- `camera_manager.py`: multi-thread camera stream handler
-- `aggregator.py`: multi-view frame synchronization
-- `multi_view_infer_worker.py`: ONNX-based STM-YOLO ensemble inference
-- `motion_similarity_net/`: Transformer Siamese network for motion evaluation
-
 ---
 
 ## 🧠 Key Features
