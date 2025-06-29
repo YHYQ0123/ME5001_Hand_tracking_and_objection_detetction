@@ -1,45 +1,183 @@
-# Hand Tracking and Object Detection for Assembly Process Verification  
-[![GitHub](https://img.shields.io/github/license/0123YHYQ1129/ME5001_Hand_tracking_and_objection_detetction)](https://github.com/0123YHYQ1129/ME5001_Hand_tracking_and_objection_detetction)  
 
-## Overview  
-This project proposes an **integrated vision-based system** for automated verification of manual assembly processes, combining multi-sensor data fusion, state-aware object detection, and motion similarity assessment. The system ensures procedural correctness in human-centric manufacturing by monitoring operator hand movements and assembly state progression.  
+# 🎯 Real-Time Spatiotemporal Assembly Verification System
 
----
+> Multi-View Assembly Monitoring | STM-YOLO Ensemble | Transformer-Based Motion Similarity | PyQt GUI Interface
 
-## Key Features  
-1. **Multi-Sensor Data Acquisition**  
-   - **Hybrid Sensor Setup**: Azure Kinect (RGB-D) + dual Logitech RGB cameras for 360° coverage.  
-   - **3D Hand Reconstruction**: Fusion of MediaPipe 2D keypoints and depth data via SVD-optimized triangulation.  
-
-2. **State-Aware YOLO Group Model**  
-   - **Sliding YOLO Architecture**: Specialized YOLOv8s models for sequential stage triplets, improving classification accuracy for adjacent assembly states.  
-   - **Multi-View Consensus**: Synchronized inference across 3 cameras with temporal stability filtering.  
-
-3. **Motion Similarity Evaluation**  
-   - **Transformer-Based Siamese Network**: Quantifies similarity between 3D hand kinematic sequences and standard templates (84% accuracy on filtered data).  
-   - **Temporal Pooling**: Handles variable-length sequences with dynamic window smoothing.  
-
-4. **PyQt-Based GUI**  
-   - Real-time operator guidance, synchronized video display, and validation feedback.  
+A lightweight and deployable framework for procedural verification in manual assembly, combining multi-camera spatiotemporal detection with 3D motion similarity assessment.  
+🧪 Built with PyTorch + ONNX + MediaPipe + PyQt5.
 
 ---
 
-## Technical Highlights  
-- **YOLOv8s**: Optimized for real-time assembly state recognition.  
-- **Transformer Encoder**: Captures long-range dependencies in motion sequences.  
-- **SVD Optimization**: Enhances 3D reconstruction robustness.  
+## 🚀 Overview
+
+This project implements a real-time vision-based system to verify human assembly actions across multiple stages. It leverages:
+
+- **STM-YOLO Group**: A spatiotemporal YOLO-based ensemble that segments assembly procedures into discrete transitions using multi-view RGB streams.
+- **Transformer-based Siamese Network**: Evaluates 3D hand motion similarity between live operator actions and golden-standard reference sequences.
+- **3D Keypoint Reconstruction**: Integrates MediaPipe and Kinect depth data to recover 3D hand trajectories.
+- **PyQt GUI Interface**: Provides real-time feedback, error display, and procedural guidance.
 
 ---
 
-## Performance  
-| Component                | Accuracy/Improvement                     |  
-|--------------------------|------------------------------------------|  
-| YOLO Group (Adjacent Stages) | **+12% Precision** vs. Single YOLO       |  
-| Motion Similarity Model  | **84% Accuracy** (frame-normalized data) |  
+## 🖼️ System Architecture
+
+```
+Logitech Cam L ─┐                  ┌── YOLO Backbone ─┐
+               │                  │                  │
+Kinect RGB/D ──┼──> Aggregator ───┼→ STM-YOLO Group ─→ Stage ID
+               │                  │                  │
+Logitech Cam R ┘                  └── Motion Segment ─→ Transformer Similarity → Score
+```
+
+**Main Modules**:
+
+- `camera_manager.py`: multi-thread camera stream handler
+- `aggregator.py`: multi-view frame synchronization
+- `multi_view_infer_worker.py`: ONNX-based STM-YOLO ensemble inference
+- `motion_similarity_net/`: Transformer Siamese network for motion evaluation
 
 ---
 
-## Installation  
-```bash  
-git clone https://github.com/0123YHYQ1129/ME5001_Hand_tracking_and_objection_detetction.git  
-pip install -r requirements.txt  
+## 🧠 Key Features
+
+| Module | Description |
+|--------|-------------|
+| `STM-YOLO` | Converts YOLOv8 backbone to a temporal classifier using 1D Conv over multi-view embeddings |
+| `Siamese Transformer` | Evaluates motion similarity using shared-weight Transformers over 3D hand trajectories |
+| `MediaPipe + Kinect` | Combines stereo RGB and depth for precise hand tracking |
+| `GUI (PyQt5)` | Real-time display of current stage, errors, and guidance |
+| `ONNX Runtime` | Real-time inference >10 FPS on A6000 GPU or deployable via NCNN |
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/YHYQ0123/ME5001_Hand_tracking_and_objection_detetction.git
+cd ME5001_Hand_tracking_and_objection_detetction
+pip install -r requirements.txt
+```
+
+**Dependencies**:
+- Python 3.8+
+- onnxruntime / onnxruntime-gpu
+- numpy, opencv-python
+- PyQt5
+- MediaPipe
+- torch / torchvision
+
+---
+
+## 🧪 Datasets
+
+### 1. Multi-View Assembly Dataset (MVA)
+
+- 3 camera views: Kinect + 2 Logitech webcams
+- 5 procedural stages (e.g., grasp, align, fasten)
+- 15 sequences/stage × 3 operators = 225 labeled clips
+
+### 2. FPHA Dataset (for motion similarity)
+
+- 1,331 sequences, 45 action classes
+- 21 hand joints × 3D → 63D vector/frame
+- Used for Siamese model training & evaluation
+
+---
+
+## 📊 Model Performance
+
+### STM-YOLO Stage Classifier
+
+| Metric | YOLOv8n-cls | STM-YOLO |
+|--------|-------------|----------|
+| Accuracy | 66.98% | **86.98%** |
+| F1 Score | 47.16% | **78.2%** |
+| Precision | 47.15% | 85.5% |
+| Recall | 51.96% | 79.3% |
+
+### Transformer Similarity (on FPHA filtered)
+
+| Metric | Value |
+|--------|-------|
+| Accuracy | 91.12% |
+| F1 Score | **0.9166** |
+| Precision | 0.8647 |
+| Recall | 0.9750 |
+
+---
+
+## 🧰 How to Run
+
+1. **Launch GUI (PyQt5)**:
+```bash
+python main.py
+```
+
+2. **Model Inference Only**:
+```bash
+python core/inference_worker.py
+```
+
+3. **Train STM-YOLO**:
+```bash
+python train_stm_yolo.py
+```
+
+4. **Train Similarity Model**:
+```bash
+cd motion_similarity_net
+python train_siamese_transformer.py
+```
+
+---
+
+## 🗂️ Folder Structure
+
+```bash
+├── core/
+│   ├── camera_manager.py
+│   ├── aggregator.py
+│   ├── multi_view_infer_worker.py
+├── models/
+│   ├── stm_yolo/
+│   ├── transformer_similarity/
+├── gui/
+│   └── interface.py
+├── data/
+│   └── MVA_dataset/
+├── onnx_models/
+│   └── stm_yolo_stage1.onnx ...
+```
+
+---
+
+## 🧑‍🔬 Citation
+
+If you use this project or dataset, please cite:
+
+```bibtex
+@article{yeqing2024stm,
+  title={Spatiotemporal Perception and Motion Similarity Learning for Real-Time Assembly Verification},
+  author={Ye Qing and Niu Yuqian and ONG Soh Khim and NEE Yeh Ching, Andrew},
+  journal={Under Review, IEEE Sensors Journal},
+  year={2024}
+}
+```
+
+---
+
+## 🙋 Author
+
+Ye Qing (叶青)  
+M.Sc. in Mechanical Engineering @ NUS  
+📧 e1373546@u.nus.edu  
+🌐 [GitHub](https://github.com/YHYQ0123)
+
+---
+
+## 📌 Acknowledgements
+
+This research is supervised by  
+**Prof. ONG Soh Khim** and **Prof. NEE Yeh Ching, Andrew**  
+National University of Singapore  
+Supported by CSC Innovation Talent Program
