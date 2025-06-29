@@ -13,6 +13,7 @@ A lightweight and deployable framework for procedural verification in manual ass
 This project implements a real-time vision-based system to verify human assembly actions across multiple stages. It leverages:
 
 - **STM-YOLO Group**: A spatiotemporal YOLO-based ensemble that segments assembly procedures into discrete transitions using multi-view RGB streams.
+  ![alt text](image-1.png)
 - **Transformer-based Siamese Network**: Evaluates 3D hand motion similarity between live operator actions and golden-standard reference sequences.
 - **3D Keypoint Reconstruction**: Integrates MediaPipe and Kinect depth data to recover 3D hand trajectories.
 - **PyQt GUI Interface**: Provides real-time feedback, error display, and procedural guidance.
@@ -20,14 +21,7 @@ This project implements a real-time vision-based system to verify human assembly
 ---
 
 ## 🖼️ System Architecture
-
-```
-Logitech Cam L ─┐                  ┌── YOLO Backbone ─┐
-               │                  │                  │
-Kinect RGB/D ──┼──> Aggregator ───┼→ STM-YOLO Group ─→ Stage ID
-               │                  │                  │
-Logitech Cam R ┘                  └── Motion Segment ─→ Transformer Similarity → Score
-```
+![alt text](image.png)
 
 **Main Modules**:
 
@@ -59,12 +53,15 @@ pip install -r requirements.txt
 ```
 
 **Dependencies**:
-- Python 3.8+
-- onnxruntime / onnxruntime-gpu
+- Python
 - numpy, opencv-python
 - PyQt5
 - MediaPipe
 - torch / torchvision
+- ultralytics
+- pykinect2
+- opencv-python
+- torchvision
 
 ---
 
@@ -108,48 +105,20 @@ pip install -r requirements.txt
 
 ## 🧰 How to Run
 
-1. **Launch GUI (PyQt5)**:
+
+1. **Train STM-YOLO**:
 ```bash
-python main.py
+python "Programs, Apps, Codes Folder\STM_YOLO\stm_yolo\train.py"
 ```
 
-2. **Model Inference Only**:
+1. **Train Similarity Model**:
 ```bash
-python core/inference_worker.py
-```
 
-3. **Train STM-YOLO**:
-```bash
-python train_stm_yolo.py
-```
-
-4. **Train Similarity Model**:
-```bash
-cd motion_similarity_net
-python train_siamese_transformer.py
+python "Programs, Apps, Codes Folder\Transformer-based_Similarity_model\train.py"
 ```
 
 ---
 
-## 🗂️ Folder Structure
-
-```bash
-├── core/
-│   ├── camera_manager.py
-│   ├── aggregator.py
-│   ├── multi_view_infer_worker.py
-├── models/
-│   ├── stm_yolo/
-│   ├── transformer_similarity/
-├── gui/
-│   └── interface.py
-├── data/
-│   └── MVA_dataset/
-├── onnx_models/
-│   └── stm_yolo_stage1.onnx ...
-```
-
----
 
 ## 🧑‍🔬 Citation
 
@@ -159,7 +128,6 @@ If you use this project or dataset, please cite:
 @article{yeqing2024stm,
   title={Spatiotemporal Perception and Motion Similarity Learning for Real-Time Assembly Verification},
   author={Ye Qing and Niu Yuqian and ONG Soh Khim and NEE Yeh Ching, Andrew},
-  journal={Under Review, IEEE Sensors Journal},
   year={2024}
 }
 ```
